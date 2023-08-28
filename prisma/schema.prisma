@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model admin_users {
+  user_id           String  @id(map: "PK_admin_users") @db.Char(5)
+  username          String  @db.VarChar(20)
+  employment_status String  @db.Char(3)
+  forename          String? @db.NChar(30)
+  surname           String? @db.NChar(30)
+  email             String? @db.NChar(40)
+  company_id        String? @db.VarChar(5)
+  department_code   String? @db.VarChar(5)
+  job_title_code    String? @db.VarChar(5)
+  app_password      String  @db.VarChar(20)
+  app_privileges    String? @db.VarChar(15)
+
+  @@index([user_id], map: "IX_admin_users")
+}
+
+model lookup_companies {
+  company_id       String    @id(map: "PK_lookup_companies") @db.VarChar(5)
+  company_name     String    @db.VarChar(40)
+  status_code      String    @db.VarChar(3)
+  company_code     String    @db.VarChar(3)
+  account_number   String?   @db.VarChar(20)
+  vat_number       String?   @db.VarChar(20)
+  eori_number      String?   @db.VarChar(10)
+  currency_code    String    @db.VarChar(3)
+  base_discount    Decimal?  @db.Decimal(3, 2)
+  login_email      String?   @db.VarChar(30)
+  login_password   String?   @db.VarChar(20)
+  website          String?   @db.VarChar(30)
+  accounts_email   String?   @db.VarChar(30)
+  general_email    String?   @db.VarChar(30)
+  orders_email     String?   @db.VarChar(50)
+  sales_contact    String?   @db.VarChar(40)
+  sales_email      String?   @db.VarChar(30)
+  sales_phone      String?   @db.VarChar(30)
+  sales_mobile     String?   @db.VarChar(30)
+  supplier_notes   String?   @db.VarChar(500)
+  delivery_notes   String?   @db.VarChar(200)
+  discount_notes   String?   @db.VarChar(200)
+  internal_notes   String?   @db.VarChar(500)
+  spend_to_date    Decimal?  @db.Decimal(10, 2)
+  created_date     DateTime? @db.DateTime
+  modified_user_id String?   @db.VarChar(5)
+  modified_date    DateTime? @db.DateTime
+}
+
+model lookup_company_addresses {
+  address_id     String  @id(map: "PK_lookup_company_addresses") @db.VarChar(5)
+  company_id     String  @db.VarChar(5)
+  address_type   String? @db.VarChar(10)
+  address_line_1 String? @db.VarChar(50)
+  address_line_2 String? @db.VarChar(50)
+  address_line_3 String? @db.VarChar(50)
+  city           String? @db.VarChar(20)
+  postcode       String? @db.VarChar(10)
+  country_code   String? @db.VarChar(3)
+  telephone      String? @db.VarChar(20)
+}
+
+model lookup_company_codes {
+  company_code String @id(map: "PK_lookup_company_codes") @db.NChar(2)
+  description  String @db.NChar(20)
+}
+
+model lookup_country_codes {
+  country_code       String  @id(map: "PK_lookup_country_codes") @db.VarChar(3)
+  country_name       String? @db.VarChar(30)
+  dial_code          Int?
+  electrical_voltage Int?
+  electrical_hertz   Int?
+
+  @@index([country_name], map: "IX_lookup_country_codes_country_name")
+}
+
+model lookup_currency_codes {
+  currency_code        String  @id(map: "PK_lookup_currency_codes") @db.VarChar(3)
+  currency_description String? @db.VarChar(30)
+  currency_symbol      String? @db.VarChar(10)
+  country_code         String? @db.VarChar(3)
+
+  @@index([currency_description], map: "IX_lookup_currency_codes_currency_desc")
+}
+
+model lookup_item_codes {
+  item_code        String  @id(map: "PK_lookup_item_codes") @db.VarChar(10)
+  item_description String? @db.VarChar(20)
+  package_code     String? @db.VarChar(10)
+  status_code      String? @db.VarChar(5)
+
+  @@index([item_description], map: "IX_lookup_item_codes_item_desc")
+}
+
+model lookup_package_codes {
+  package_code        String  @id(map: "PK_lookup_package_codes") @db.VarChar(10)
+  package_description String? @db.VarChar(20)
+
+  @@index([package_description], map: "IX_lookup_package_codes_package_desc")
+}
+
+model lookup_status_codes {
+  status_code        String  @id(map: "PK_lookup_status_codes") @db.VarChar(5)
+  status_description String? @db.VarChar(20)
+  table_name         String? @db.VarChar(20)
+  sequence           String? @db.VarChar(5)
+  short_description  String? @db.NChar(15)
+
+  @@index([short_description], map: "IX_lookup_status_codes_short_desc")
+}
+
+model lookup_uom_codes {
+  uom_code        String  @id(map: "PK_lookup_uom_codes") @db.VarChar(5)
+  uom_description String? @db.VarChar(20)
+  decimal_places  Int?
+
+  @@index([uom_description], map: "IX_lookup_uom_codes_uom_desc")
+}
+
+model project_authorisations {
+  job_id        Int
+  user_id       String  @db.VarChar(5)
+  authorisation String? @db.VarChar(12)
+
+  @@id([job_id, user_id], map: "PK_project_authorisations")
+}
+
+model project_batches {
+  job_id       String @db.NChar(10)
+  batch_number String @db.NChar(5)
+  batch_name   String @db.VarChar(25)
+  batch_type   String @db.VarChar(3)
+  batch_status String @db.VarChar(3)
+  user_id      String @db.VarChar(5)
+
+  @@id([job_id, batch_number], map: "PK_project_batches_1")
+}
+
+model project_item_compositions {
+  item_id       String   @id(map: "PK_project_item_compositions") @db.NChar(10)
+  material_code String?  @db.VarChar(10)
+  percentage    Decimal? @db.Decimal(3, 2)
+}
+
+model project_item_dimensions {
+  item_id   String   @id(map: "PK_project_item_dimensions") @db.NChar(10)
+  spec_code String   @db.VarChar(10)
+  uom_code  String   @db.VarChar(3)
+  value     Decimal? @db.Decimal(5, 2)
+}
+
+model project_item_finishes {
+  item_id     String  @id(map: "PK_project_item_finishes") @db.NChar(10)
+  finish_code String? @db.VarChar(10)
+  notes       String? @db.VarChar(256)
+  sequence    Int?
+}
+
+model project_items {
+  Item_id                String    @id(map: "PK_project_items") @db.NChar(10)
+  job_id                 String    @db.NChar(10)
+  batch_number           String    @db.NChar(10)
+  location_code          String?   @db.VarChar(20)
+  item_ref               String?   @db.VarChar(20)
+  design_ref             String?   @db.VarChar(20)
+  item_status            String    @db.VarChar(3)
+  item_code              String?   @db.VarChar(10)
+  additional_description String?   @db.VarChar(20)
+  quantity               Decimal   @db.Decimal(5, 2)
+  spares                 Decimal   @db.Decimal(5, 2)
+  uom_code               String?   @db.VarChar(5)
+  supplier_code          String?   @db.VarChar(5)
+  manufacturer_id        String?   @db.VarChar(5)
+  part_number            String?   @db.VarChar(50)
+  actual_currency        String?   @db.VarChar(3)
+  actual_exchange_rate   Decimal   @db.Decimal(5, 2)
+  actual_value           Decimal   @db.Decimal(10, 2)
+  budget_currency        String?   @db.VarChar(3)
+  budget_exchange_rate   Decimal   @db.Decimal(5, 2)
+  budget_value           Decimal   @db.Decimal(10, 2)
+  client_markup          Decimal   @db.Decimal(2, 2)
+  client_currency        String?   @db.VarChar(3)
+  client_exchange_rate   Decimal   @db.Decimal(5, 2)
+  client_value           Decimal   @db.Decimal(10, 2)
+  group_number           String    @db.NChar(10)
+  group_sequence         String    @db.NChar(3)
+  package_code           String?   @db.VarChar(10)
+  supplier_address_id    String?   @db.VarChar(5)
+  del_address_id         String?   @db.VarChar(5)
+  delivery_date          DateTime? @db.Date
+  drawing_revision       String?   @db.VarChar(3)
+  drawing_issue_date     DateTime? @db.Date
+  Inquiry_id             String    @db.NChar(10)
+  order_id               String    @db.NChar(10)
+  order_number           String    @db.NChar(10)
+  country_of_origin      String?   @db.VarChar(3)
+  quote_ref              String?   @db.VarChar(50)
+  quote_date             DateTime? @db.Date
+  shop_drawing           String?   @db.Char(1)
+  sample                 String?   @db.Char(1)
+  inspection             String?   @db.Char(1)
+  photograph             String?   @db.Char(1)
+  reservation_number     String?   @db.VarChar(20)
+  reservation_date       DateTime? @db.Date
+  specifier_id           String?   @db.VarChar(5)
+  design_notes           String?   @db.VarChar(50)
+  user_notes             String?   @db.VarChar(50)
+  supplier_notes         String?   @db.VarChar(50)
+  created_date           DateTime? @db.Date
+  modified_date          DateTime? @db.Date
+
+  @@index([batch_number], map: "IX_project_items_bath_number")
+  @@index([item_ref], map: "IX_project_items_item_ref")
+  @@index([job_id], map: "IX_project_items_job_id")
+  @@index([location_code], map: "IX_project_items_location")
+}
+
+model project_locations {
+  location_id     String    @id(map: "PK_project_locations") @db.NChar(10)
+  job_id          String    @db.NChar(5)
+  location_code   String    @db.VarChar(20)
+  location_name   String?   @db.VarChar(30)
+  client_location String?   @db.VarChar(50)
+  room_type       String?   @db.VarChar(10)
+  modified_date   DateTime? @db.Date
+
+  @@index([job_id], map: "IX_project_locations_job_id")
+  @@index([location_code], map: "IX_project_locations_location_code")
+}
+
+model project_projects {
+  job_id              Int      @id(map: "PK_projects")
+  project_number      String   @db.VarChar(15)
+  project_name        String   @db.VarChar(30)
+  client_number       String?  @db.VarChar(15)
+  client_name         String?  @db.VarChar(20)
+  project_manager     String   @db.VarChar(5)
+  project_coordinator String?  @db.VarChar(20)
+  company_id          String   @db.VarChar(5)
+  currency_code       String   @db.VarChar(3)
+  project_type        String   @db.VarChar(3)
+  start_date          DateTime @db.Date
+  end_date            DateTime @db.Date
+
+  @@index([project_number], map: "IX_projects_project_number")
+}
