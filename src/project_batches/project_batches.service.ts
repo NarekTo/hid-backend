@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
 import { project_batches, Prisma } from '@prisma/client';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProjectBatchesService {
   constructor(private prisma: PrismaService) {}
 
   async findAllBatches(): Promise<project_batches[]> {
+    console.log('from service', this.prisma.project_batches.findMany());
     return this.prisma.project_batches.findMany(); // Retrieve all batches
   }
 
