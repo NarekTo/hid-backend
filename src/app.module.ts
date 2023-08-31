@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ProjectBatchesModule } from './project_batches/project_batches.module';
 
-import { AdminUsersModule } from './admin_users/admin_users.module';
 import { AuthModule } from './auth/auth.module';
+import { UsersService } from './users/users.service';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [ProjectBatchesModule, AuthModule],
+  imports: [ProjectBatchesModule, AuthModule, PrismaModule],
   controllers: [],
-  providers: [],
+  providers: [UsersService],
 })
 export class AppModule {}
