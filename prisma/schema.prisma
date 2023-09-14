@@ -251,3 +251,11 @@ model project_projects {
 
   @@index([project_number], map: "IX_projects_project_number")
 }
+
+model PasswordReset {
+  id         Int       @id(map: "PK__Password__3213E83FC4242803") @default(autoincrement())
+  email      String?   @db.VarChar(255)
+  token      String?   @db.VarChar(255)
+  expiryDate DateTime? @db.DateTime
+  user_id    String?   @db.VarChar(255)
+}

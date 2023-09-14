@@ -7,7 +7,8 @@ import {
 import { PrismaService } from './../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './auth.entity';
-
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
@@ -22,18 +23,29 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException(`No user found for user id: ${user_id}`);
     }
+    // const isPasswordValid = await bcrypt.compare(password, user.app_password);
 
-    // Step 2: Check if the password is correct
-    const isPasswordValid = user.app_password === password;
+    const hashedPassword = crypto.createHash('sha1').update(password).digest('hex').substring(0, 20);
+
+  // Compare the hashed password with the stored password
+  const isPasswordValid = user.app_password === hashedPassword;
 
     // If password does not match, throw an error
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
     }
+    const accessToken = this.jwtService.sign({ user_id });
+    const authEntity: AuthEntity = {
+      user_id: user.user_id,
+      name: user.username,
+      email: user.email,
+      job_title_code: user.job_title_code,
+      app_password: user.app_password,
+      app_privileges: user.app_privileges,
+      accessToken,
+    };
 
     // Step 3: Generate a JWT containing the user's ID and return it
-    return {
-      accessToken: this.jwtService.sign({ user_id }),
-    };
+    return authEntity;
   }
 }
