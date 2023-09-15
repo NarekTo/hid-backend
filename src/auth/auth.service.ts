@@ -14,6 +14,7 @@ export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   async login(user_id: string, password: string): Promise<AuthEntity> {
+   try{
     // Step 1: Fetch a user with the given email
     const user = await this.prisma.admin_users.findUnique({
       where: { user_id },
@@ -35,6 +36,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
     const accessToken = this.jwtService.sign({ user_id });
+
     const authEntity: AuthEntity = {
       user_id: user.user_id,
       name: user.username,
@@ -47,5 +49,11 @@ export class AuthService {
 
     // Step 3: Generate a JWT containing the user's ID and return it
     return authEntity;
+  } catch (err){
+    console.error(err);
+
+    // Throw a generic error message
+    throw new Error('An error occurred while trying to log in');
+  }
   }
 }
