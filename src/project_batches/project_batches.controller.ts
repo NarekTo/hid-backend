@@ -6,10 +6,13 @@ import {
   Delete,
   Param,
   Body,
+  UseGuards
 } from '@nestjs/common';
 import { ProjectBatchesService } from './project_batches.service';
 import { project_batches, Prisma } from '@prisma/client';
+import { JwtAuthGuard } from 'src/users/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('project-batches')
 export class ProjectBatchesController {
   constructor(private projectBatchesService: ProjectBatchesService) {}
