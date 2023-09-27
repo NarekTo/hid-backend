@@ -9,6 +9,11 @@ export class ItemsService {
   async getAllItems() {
     return this.prisma.project_items.findMany();
   }
+  async getItemsByBatchNumber(batchNumber: string) {
+    return this.prisma.project_items.findMany({
+      where: { batch_number: batchNumber },
+    });
+  }
 
   async getItemById(itemId: string) {
     return this.prisma.project_items.findUnique({

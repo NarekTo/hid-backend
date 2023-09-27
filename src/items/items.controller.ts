@@ -15,6 +15,12 @@ export class ItemsController {
   getAllItems() {
     return this.itemsService.getAllItems();
   }
+  @Get('batch/:batchNumber')
+@ApiBearerAuth()
+@ApiOkResponse({ description: 'Return all items with the same batch number' })
+getItemsByBatchNumber(@Param('batchNumber') batchNumber: string) {
+  return this.itemsService.getItemsByBatchNumber(batchNumber);
+}
 
   @Get(':id')
   @ApiBearerAuth()
