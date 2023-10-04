@@ -248,6 +248,7 @@ model project_projects {
   project_type        String   @db.VarChar(3)
   start_date          DateTime @db.Date
   end_date            DateTime @db.Date
+  status_code         String?  @db.VarChar(3)
 
   @@index([project_number], map: "IX_projects_project_number")
 }
