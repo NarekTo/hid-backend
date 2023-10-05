@@ -36,4 +36,28 @@ export class ProjectProjectsService {
       where: { job_id: id },
     });
   }
+
+  async getUserProjects(userId: string): Promise<{ userProjects: project_projects[], projects: project_projects[] }> {
+    const projectAuthorisations = await this.prisma.project_authorisations.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        job_id: true,
+      },
+    });
+  
+    const jobIds = projectAuthorisations.map((projectAuth) => projectAuth.job_id);
+  
+    const userProjects = await this.prisma.project_projects.findMany({
+      where: {
+        job_id: {
+          in: jobIds,
+        },
+      },
+    });
+    const projects = await this.prisma.project_projects.findMany();
+  
+    return { userProjects, projects };
+  }
 }

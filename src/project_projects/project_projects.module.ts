@@ -5,8 +5,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
-
-
   controllers: [ProjectProjectsController],
   providers: [ProjectProjectsService, PrismaService],
 })

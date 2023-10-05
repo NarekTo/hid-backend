@@ -10,11 +10,19 @@ import { JwtAuthGuard } from 'src/users/jwt-auth.guard';
 export class ProjectProjectsController {
   constructor(private readonly projectProjectsService: ProjectProjectsService) {}
 
+
   @Post()
   @ApiBearerAuth()
   async createProject(@Body() projectData: project_projects): Promise<project_projects> {
     return this.projectProjectsService.createProject(projectData);
   }
+
+  //returns all projects for a user and all projects { userProjects: project_projects[], projects: project_projects[]}
+  @Get('user-projects/:userId')
+  @ApiBearerAuth()
+async getUserProjects(@Param('userId') userId: string): Promise<{ userProjects: project_projects[], projects: project_projects[] }> {
+  return this.projectProjectsService.getUserProjects(userId);
+}
 
   @Get(':id')
   @ApiBearerAuth()

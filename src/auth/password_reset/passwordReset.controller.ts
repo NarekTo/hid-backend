@@ -4,6 +4,9 @@ import { PrismaService } from '../../prisma/prisma.service'
 import * as nodemailer from 'nodemailer';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('password-reset')
 @Controller('password-reset')
 export class PasswordResetController {
   constructor(private passwordResetService: PasswordResetService,  private prismaService: PrismaService) {}
