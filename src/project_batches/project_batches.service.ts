@@ -11,6 +11,12 @@ export class ProjectBatchesService {
     console.log('from service', this.prisma.project_batches.findMany());
     return this.prisma.project_batches.findMany(); // Retrieve all batches
   }
+  
+  async findProjectBatches(job_id: string): Promise<project_batches[]> {
+    return this.prisma.project_batches.findMany({
+      where: { job_id },
+    });
+  }
 
   async findBatch(
     job_id: string,

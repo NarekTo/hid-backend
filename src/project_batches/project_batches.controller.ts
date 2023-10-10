@@ -25,6 +25,12 @@ export class ProjectBatchesController {
     return this.projectBatchesService.findAllBatches();
   }
 
+  @Get('project-batches/:job_id')
+  @ApiBearerAuth()
+async findProjectBatches(@Param('job_id') job_id: string): Promise<project_batches[]> {
+  return this.projectBatchesService.findProjectBatches(job_id);
+}
+
   @Get(':jobId/:batchNumber')
   @ApiBearerAuth()
   findBatch(
