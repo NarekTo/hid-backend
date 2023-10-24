@@ -15,6 +15,9 @@ export class AuthEntity {
   job_title_code: string;
 
   @ApiProperty()
+  department_code: string;
+
+  @ApiProperty()
   app_password: string;
 
   @ApiProperty()

@@ -44,6 +44,7 @@ export class AuthService {
       job_title_code: user.job_title_code,
       app_password: user.app_password,
       app_privileges: user.app_privileges,
+      department_code: user.department_code,
       accessToken,
     };
 
