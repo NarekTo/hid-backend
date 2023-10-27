@@ -260,3 +260,16 @@ model PasswordReset {
   expiryDate DateTime? @db.DateTime
   user_id    String?   @db.VarChar(255)
 }
+
+model project_item_specs {
+  item_id     String  @id(map: "PK_project_item_specs") @db.NChar(10)
+  finish_code String? @db.VarChar(10)
+  notes       String? @db.VarChar(256)
+  sequence    Int?
+}
+
+model project_item_images {
+  item_id        Int @id(map: "PK_project_item_images")
+  image_id       Int
+  image_sequence Int
+}

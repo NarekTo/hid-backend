@@ -4,7 +4,10 @@ import { ItemsGateway } from '../gateways/items.gateway';
 
 @Injectable()
 export class ItemsService {
-    constructor(private itemsGateway: ItemsGateway,private prisma: PrismaService) {}
+  constructor(
+    private itemsGateway: ItemsGateway,
+    private prisma: PrismaService,
+  ) {}
 
   async getAllItems() {
     return this.prisma.project_items.findMany();
@@ -21,6 +24,34 @@ export class ItemsService {
     });
   }
 
+  async getItemInfoById(itemId: string) {
+    const projectItems = await this.prisma.project_items.findUnique({
+      where: { Item_id: itemId },
+    });
+
+    const projectSpecifications =
+      await this.prisma.project_item_specs.findUnique({
+        where: { item_id: itemId },
+      });
+
+    const projectCompositions =
+      await this.prisma.project_item_compositions.findUnique({
+        where: { item_id: itemId },
+      });
+
+    const projectDimensions =
+      await this.prisma.project_item_dimensions.findUnique({
+        where: { item_id: itemId },
+      });
+
+    return {
+      projectItems,
+      projectSpecifications,
+      projectCompositions,
+      projectDimensions,
+    };
+  }
+
   async createItem(data: any) {
     return this.prisma.project_items.create({ data });
   }
@@ -29,18 +60,18 @@ export class ItemsService {
     const item = await this.prisma.project_items.findUnique({
       where: { Item_id: itemId },
     });
-  
+
     if (!item) {
       throw new NotFoundException(`Item with id ${itemId} not found`);
     }
-  
+
     const updatedItem = await this.prisma.project_items.update({
       where: { Item_id: itemId },
       data,
     });
-  
+
     this.itemsGateway.server.emit('itemUpdated', updatedItem);
-  
+
     return updatedItem;
   }
 

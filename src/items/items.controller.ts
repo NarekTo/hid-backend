@@ -1,4 +1,13 @@
-import { Controller, Get, Param, Post, Body, Put, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Put,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/users/jwt-auth.guard';
@@ -16,17 +25,25 @@ export class ItemsController {
     return this.itemsService.getAllItems();
   }
   @Get('batch/:batchNumber')
-@ApiBearerAuth()
-@ApiOkResponse({ description: 'Return all items with the same batch number' })
-getItemsByBatchNumber(@Param('batchNumber') batchNumber: string) {
-  return this.itemsService.getItemsByBatchNumber(batchNumber);
-}
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Return all items with the same batch number' })
+  getItemsByBatchNumber(@Param('batchNumber') batchNumber: string) {
+    return this.itemsService.getItemsByBatchNumber(batchNumber);
+  }
 
   @Get(':id')
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'Return item by id' })
   getItemById(@Param('id') itemId: string) {
     return this.itemsService.getItemById(itemId);
+  }
+
+  @Get('info/:id')
+  @ApiBearerAuth()
+  async getItemInfoById(@Param('id') itemId: string) {
+    // Call the getItemInfoById method from the ItemsService
+    const itemInfo = await this.itemsService.getItemInfoById(itemId);
+    return itemInfo;
   }
 
   @Post()
