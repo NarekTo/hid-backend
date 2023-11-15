@@ -7,16 +7,23 @@ import {
   Put,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/users/jwt-auth.guard';
+import { ProjectBatchesService } from 'src/project_batches/project_batches.service';
+import { ProjectProjectsService } from 'src/project_projects/project_projects.service';
 
 @ApiTags('items')
 @Controller('items')
 @UseGuards(JwtAuthGuard)
 export class ItemsController {
-  constructor(private itemsService: ItemsService) {}
+  constructor(
+    private projectBatchesService: ProjectBatchesService,
+    private projectProjectsService: ProjectProjectsService,
+    private itemsService: ItemsService, // Inject ItemsService
+  ) {}
 
   @Get()
   @ApiBearerAuth()
@@ -44,6 +51,22 @@ export class ItemsController {
     // Call the getItemInfoById method from the ItemsService
     const itemInfo = await this.itemsService.getItemInfoById(itemId);
     return itemInfo;
+  }
+
+  @Get('/tabledata/:id/:batchNumber')
+  @ApiBearerAuth()
+  async getItemData(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('batchNumber', ParseIntPipe) batchNumber: string,
+  ) {
+    const project = await this.projectProjectsService.findProjectById(id);
+    const batch = await this.projectBatchesService.findBatch(
+      id.toString(),
+      batchNumber,
+    );
+    const items = await this.itemsService.getAllItems(); // Retrieve all items
+
+    return { project, batch, items };
   }
 
   @Post()
