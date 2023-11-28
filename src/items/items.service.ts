@@ -14,7 +14,12 @@ export class ItemsService {
   }
   async getItemsByBatchNumber(batchNumber: string) {
     return this.prisma.project_items.findMany({
-      where: { batch_number: batchNumber },
+      where: {
+        batch_number: batchNumber,
+        item_status: {
+          not: 'IZ',
+        },
+      },
     });
   }
 
@@ -53,7 +58,12 @@ export class ItemsService {
   }
 
   async createItem(data: any) {
-    return this.prisma.project_items.create({ data });
+    const newItem = await this.prisma.project_items.create({ data });
+
+    // Emit the 'itemAdded' event with the new item as the payload
+    this.itemsGateway.server.emit('itemAdded', newItem);
+
+    return newItem;
   }
 
   async updateItem(itemId: string, data: any) {
@@ -74,10 +84,35 @@ export class ItemsService {
 
     return updatedItem;
   }
-
   async deleteItem(itemId: string) {
-    return this.prisma.project_items.delete({
+    const deletedItem = await this.prisma.project_items.delete({
       where: { Item_id: itemId },
     });
+
+    // Emit the 'itemDeleted' event with the deleted item as the payload
+    this.itemsGateway.server.emit('itemDeleted', deletedItem);
+
+    return deletedItem;
+  }
+
+  async updateItemStatus(itemId: string, status: string) {
+    const item = await this.prisma.project_items.findUnique({
+      where: { Item_id: itemId },
+    });
+
+    if (!item) {
+      throw new NotFoundException(`Item with id ${itemId} not found`);
+    }
+
+    const updatedItem = await this.prisma.project_items.update({
+      where: { Item_id: itemId },
+      data: {
+        item_status: status,
+      },
+    });
+
+    this.itemsGateway.server.emit('itemUpdated', updatedItem);
+
+    return updatedItem;
   }
 }

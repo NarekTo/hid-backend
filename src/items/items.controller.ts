@@ -89,4 +89,14 @@ export class ItemsController {
   deleteItem(@Param('id') itemId: string) {
     return this.itemsService.deleteItem(itemId);
   }
+
+  @Put(':id/status')
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Update item status' })
+  updateItemStatus(
+    @Param('id') itemId: string,
+    @Body('status') status: string,
+  ) {
+    return this.itemsService.updateItemStatus(itemId, status);
+  }
 }
