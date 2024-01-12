@@ -12,6 +12,15 @@ export class ItemsService {
   async getAllItems() {
     return this.prisma.project_items.findMany();
   }
+
+  async getItemsByProjectNumber(projectNumber: string) {
+    return this.prisma.project_items.findMany({
+      where: {
+        job_id: projectNumber,
+      },
+    });
+  }
+
   async getItemsByBatchNumber(batchNumber: string) {
     return this.prisma.project_items.findMany({
       where: {
@@ -30,30 +39,33 @@ export class ItemsService {
   }
 
   async getItemInfoById(itemId: string) {
-    const projectItems = await this.prisma.project_items.findUnique({
+    const item = await this.prisma.project_items.findUnique({
       where: { Item_id: itemId },
     });
 
-    const projectSpecifications =
-      await this.prisma.project_item_specs.findUnique({
+    const itemSpecifications = await this.prisma.project_item_specs.findMany({
+      where: { item_id: itemId },
+    });
+
+    const itemCompositions =
+      await this.prisma.project_item_compositions.findMany({
         where: { item_id: itemId },
       });
 
-    const projectCompositions =
-      await this.prisma.project_item_compositions.findUnique({
-        where: { item_id: itemId },
-      });
+    const itemDimensions = await this.prisma.project_item_dimensions.findMany({
+      where: { item_id: itemId },
+    });
 
-    const projectDimensions =
-      await this.prisma.project_item_dimensions.findUnique({
-        where: { item_id: itemId },
-      });
+    const itemImages = await this.prisma.project_item_images.findMany({
+      where: { item_id: Number(itemId) },
+    });
 
     return {
-      projectItems,
-      projectSpecifications,
-      projectCompositions,
-      projectDimensions,
+      item,
+      itemSpecifications,
+      itemCompositions,
+      itemDimensions,
+      itemImages, // Added projectImages to the return object
     };
   }
 

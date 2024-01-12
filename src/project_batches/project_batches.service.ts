@@ -8,7 +8,6 @@ export class ProjectBatchesService {
   constructor(private prisma: PrismaService) {}
 
   async findAllBatches(): Promise<project_batches[]> {
-    console.log('from service', this.prisma.project_batches.findMany());
     return this.prisma.project_batches.findMany(); // Retrieve all batches
   }
 

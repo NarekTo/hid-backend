@@ -69,6 +69,13 @@ export class ItemsController {
     return { project, batch, items };
   }
 
+  @Get('project/:projectNumber')
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Return all items in a project' })
+  getItemsByProjectNumber(@Param('projectNumber') projectNumber: string) {
+    return this.itemsService.getItemsByProjectNumber(projectNumber);
+  }
+
   @Post()
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'Create a new item' })

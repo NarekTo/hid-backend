@@ -124,6 +124,14 @@ model lookup_uom_codes {
   @@index([uom_description], map: "IX_lookup_uom_codes_uom_desc")
 }
 
+model PasswordReset {
+  id         Int       @id(map: "PK__Password__3213E83F4962047B") @default(autoincrement())
+  email      String?   @db.VarChar(255)
+  token      String?   @db.VarChar(255)
+  expiryDate DateTime? @db.DateTime
+  user_id    String?   @db.VarChar(255)
+}
+
 model project_authorisations {
   job_id        Int
   user_id       String  @db.VarChar(5)
@@ -158,6 +166,19 @@ model project_item_dimensions {
 
 model project_item_finishes {
   item_id     String  @id(map: "PK_project_item_finishes") @db.NChar(10)
+  finish_code String? @db.VarChar(10)
+  notes       String? @db.VarChar(256)
+  sequence    Int?
+}
+
+model project_item_images {
+  item_id        Int @id(map: "PK_project_item_images")
+  image_id       Int
+  image_sequence Int
+}
+
+model project_item_specs {
+  item_id     String  @id(map: "PK_project_item_specs") @db.NChar(10)
   finish_code String? @db.VarChar(10)
   notes       String? @db.VarChar(256)
   sequence    Int?
@@ -251,25 +272,4 @@ model project_projects {
   status_code         String?  @db.VarChar(3)
 
   @@index([project_number], map: "IX_projects_project_number")
-}
-
-model PasswordReset {
-  id         Int       @id(map: "PK__Password__3213E83FC4242803") @default(autoincrement())
-  email      String?   @db.VarChar(255)
-  token      String?   @db.VarChar(255)
-  expiryDate DateTime? @db.DateTime
-  user_id    String?   @db.VarChar(255)
-}
-
-model project_item_specs {
-  item_id     String  @id(map: "PK_project_item_specs") @db.NChar(10)
-  finish_code String? @db.VarChar(10)
-  notes       String? @db.VarChar(256)
-  sequence    Int?
-}
-
-model project_item_images {
-  item_id        Int @id(map: "PK_project_item_images")
-  image_id       Int
-  image_sequence Int
 }
