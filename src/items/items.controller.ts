@@ -50,6 +50,12 @@ export class ItemsController {
   async getItemInfoById(@Param('id') itemId: string) {
     // Call the getItemInfoById method from the ItemsService
     const itemInfo = await this.itemsService.getItemInfoById(itemId);
+    for (let key in itemInfo) {
+      if (typeof itemInfo[key] === 'string') {
+        itemInfo[key] = itemInfo[key].trim();
+      }
+    }
+
     return itemInfo;
   }
 
@@ -105,5 +111,26 @@ export class ItemsController {
     @Body('status') status: string,
   ) {
     return this.itemsService.updateItemStatus(itemId, status);
+  }
+
+  @Post(':type/:itemId')
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Table item specs' })
+  async upsertItem(
+    @Param('type') type: string,
+    @Param('itemId') itemId: string,
+    @Body() data: any,
+  ) {
+    const { action, ...itemsData } = data;
+
+    if (action !== 'merge' && action !== 'overwrite') {
+      throw new Error(
+        'Invalid action. Action must be either "merge" or "overwrite".',
+      );
+    }
+    console.log('Request body controller:', data); // Log the request body
+    console.log('Upsert parameters:', { type, itemId }); // Log the parameters
+    const itemsArray = Object.values(itemsData);
+    return await this.itemsService.upsertItem(type, itemId, itemsArray, action);
   }
 }

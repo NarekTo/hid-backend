@@ -127,4 +127,123 @@ export class ItemsService {
 
     return updatedItem;
   }
+  async upsertItem(
+    type: string,
+    itemId: string,
+    data: any[],
+    action: 'merge' | 'overwrite',
+  ) {
+    console.log('Upsert parameters:', { type, itemId, data }); // Log the parameters
+    console.log('Upsert action:', action); // Log the action
+
+    switch (type) {
+      case 'itemDimensions':
+        if (action === 'overwrite') {
+          await this.prisma.project_item_dimensions.deleteMany({
+            where: { item_id: itemId },
+          });
+        }
+        for (const item of data) {
+          const trimmedItemId = item.item_id.trim();
+          console.log('trimmedItemId', trimmedItemId);
+
+          // Check if a record with the same item_id and spec_code already exists
+          const existingRecord =
+            await this.prisma.project_item_dimensions.findUnique({
+              where: { item_id: trimmedItemId, spec_code: item.spec_code },
+            });
+
+          // If the record doesn't exist or if the action is 'overwrite', upsert the record
+          if (!existingRecord && action === 'merge') {
+            await this.prisma.project_item_dimensions.upsert({
+              where: { item_id: trimmedItemId, spec_code: item.spec_code },
+              update: { ...item, item_id: trimmedItemId },
+              create: { ...item, item_id: trimmedItemId },
+            });
+          } else if (action === 'overwrite') {
+            // If the action is 'overwrite', insert the new record
+            await this.prisma.project_item_dimensions.create({
+              data: { ...item, item_id: trimmedItemId },
+            });
+          }
+        }
+        break;
+      case 'itemSpecifications':
+        // If the action is 'overwrite', delete all existing specifications for the target item_id
+        if (action === 'overwrite') {
+          await this.prisma.project_item_specs.deleteMany({
+            where: { item_id: itemId },
+          });
+        }
+
+        // Retrieve the highest sequence number for the target item_id
+        const maxSequence = await this.prisma.project_item_specs.aggregate({
+          where: { item_id: itemId },
+          _max: {
+            sequence: true,
+          },
+        });
+
+        let nextSequence = (maxSequence._max.sequence || 0) + 1;
+
+        for (const spec of data) {
+          const trimmedItemId = spec.item_id.trim();
+          console.log('trimmedItemId', trimmedItemId);
+
+          if (action === 'merge') {
+            // Increment the sequence number for each spec during merge
+            await this.prisma.project_item_specs.create({
+              data: {
+                ...spec,
+                item_id: trimmedItemId,
+                sequence: nextSequence++,
+              },
+            });
+          } else if (action === 'overwrite') {
+            // For overwrite, simply insert the new spec
+            await this.prisma.project_item_specs.create({
+              data: { ...spec, item_id: trimmedItemId },
+            });
+          }
+        }
+        break;
+      case 'itemCompositions':
+        if (action === 'overwrite') {
+          await this.prisma.project_item_compositions.deleteMany({
+            where: { item_id: itemId },
+          });
+        }
+
+        for (const composition of data) {
+          const trimmedItemId = composition.item_id.trim();
+          console.log('trimmedItemId', trimmedItemId);
+
+          const existingComposition =
+            await this.prisma.project_item_compositions.findUnique({
+              where: {
+                item_id: trimmedItemId,
+                material_code: composition.material_code,
+              },
+            });
+
+          if (!existingComposition && action === 'merge') {
+            await this.prisma.project_item_compositions.upsert({
+              where: {
+                item_id: trimmedItemId,
+                material_code: composition.material_code,
+              },
+              update: { ...composition, item_id: trimmedItemId },
+              create: { ...composition, item_id: trimmedItemId },
+            });
+          } else if (action === 'overwrite') {
+            await this.prisma.project_item_compositions.create({
+              data: { ...composition, item_id: trimmedItemId },
+            });
+          }
+        }
+        break;
+      default:
+        throw new Error(`Invalid type: ${type}`);
+    }
+  }
 }
