@@ -31,6 +31,7 @@ export class ItemsController {
   getAllItems() {
     return this.itemsService.getAllItems();
   }
+
   @Get('batch/:batchNumber')
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'Return all items with the same batch number' })
@@ -55,7 +56,6 @@ export class ItemsController {
         itemInfo[key] = itemInfo[key].trim();
       }
     }
-
     return itemInfo;
   }
 
@@ -71,7 +71,6 @@ export class ItemsController {
       batchNumber,
     );
     const items = await this.itemsService.getAllItems(); // Retrieve all items
-
     return { project, batch, items };
   }
 
@@ -82,25 +81,11 @@ export class ItemsController {
     return this.itemsService.getItemsByProjectNumber(projectNumber);
   }
 
-  @Post()
-  @ApiBearerAuth()
-  @ApiOkResponse({ description: 'Create a new item' })
-  createItem(@Body() data: any) {
-    return this.itemsService.createItem(data);
-  }
-
   @Put(':id')
   @ApiBearerAuth()
   @ApiOkResponse({ description: 'Update an item' })
   updateItem(@Param('id') itemId: string, @Body() data: any) {
     return this.itemsService.updateItem(itemId, data);
-  }
-
-  @Delete(':id')
-  @ApiBearerAuth()
-  @ApiOkResponse({ description: 'Delete an item' })
-  deleteItem(@Param('id') itemId: string) {
-    return this.itemsService.deleteItem(itemId);
   }
 
   @Put(':id/status')
@@ -113,24 +98,35 @@ export class ItemsController {
     return this.itemsService.updateItemStatus(itemId, status);
   }
 
+  @Post()
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Create a new item' })
+  createItem(@Body() data: any) {
+    return this.itemsService.createItem(data);
+  }
+
   @Post(':type/:itemId')
   @ApiBearerAuth()
-  @ApiOkResponse({ description: 'Table item specs' })
+  @ApiOkResponse({ description: 'Update items dim/comps/specs' })
   async upsertItem(
     @Param('type') type: string,
     @Param('itemId') itemId: string,
     @Body() data: any,
   ) {
     const { action, ...itemsData } = data;
-
     if (action !== 'merge' && action !== 'overwrite') {
       throw new Error(
         'Invalid action. Action must be either "merge" or "overwrite".',
       );
     }
-    console.log('Request body controller:', data); // Log the request body
-    console.log('Upsert parameters:', { type, itemId }); // Log the parameters
     const itemsArray = Object.values(itemsData);
     return await this.itemsService.upsertItem(type, itemId, itemsArray, action);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOkResponse({ description: 'Delete an item' })
+  deleteItem(@Param('id') itemId: string) {
+    return this.itemsService.deleteItem(itemId);
   }
 }

@@ -6,7 +6,6 @@ import { UsersService } from './users/users.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ItemsModule } from './items/items.module';
 import { ProjectProjectsModule } from './project_projects/project_projects.module';
-import { ProjectAuthorisationsModule } from './project_auth/project_authorisations.module';
 import { ProjectItemSpecsModule } from './project-item-specs/project-item-specs.module';
 import { ProjectItemCompositionsModule } from './project-item-compositions/project-item-compositions.module';
 import { ProjectItemDimensionsModule } from './project-item-dimensions/project-item-dimensions.module';
@@ -18,7 +17,7 @@ import { ProjectItemDimensionsModule } from './project-item-dimensions/project-i
     PrismaModule,
     ItemsModule,
     ProjectProjectsModule,
-    ProjectAuthorisationsModule,
+
     ProjectItemSpecsModule,
     ProjectItemCompositionsModule,
     ProjectItemDimensionsModule,

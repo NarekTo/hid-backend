@@ -96,6 +96,7 @@ export class ItemsService {
 
     return updatedItem;
   }
+
   async deleteItem(itemId: string) {
     const deletedItem = await this.prisma.project_items.delete({
       where: { Item_id: itemId },
@@ -127,6 +128,7 @@ export class ItemsService {
 
     return updatedItem;
   }
+
   async upsertItem(
     type: string,
     itemId: string,
