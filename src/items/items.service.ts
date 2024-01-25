@@ -57,7 +57,7 @@ export class ItemsService {
     });
 
     const itemImages = await this.prisma.project_item_images.findMany({
-      where: { item_id: Number(itemId) },
+      where: { item_id: itemId },
     });
 
     return {
@@ -152,13 +152,23 @@ export class ItemsService {
           // Check if a record with the same item_id and spec_code already exists
           const existingRecord =
             await this.prisma.project_item_dimensions.findUnique({
-              where: { item_id: trimmedItemId, spec_code: item.spec_code },
+              where: {
+                item_id_spec_code: {
+                  item_id: trimmedItemId,
+                  spec_code: item.spec_code,
+                },
+              },
             });
 
           // If the record doesn't exist or if the action is 'overwrite', upsert the record
           if (!existingRecord && action === 'merge') {
             await this.prisma.project_item_dimensions.upsert({
-              where: { item_id: trimmedItemId, spec_code: item.spec_code },
+              where: {
+                item_id_spec_code: {
+                  item_id: trimmedItemId,
+                  spec_code: item.spec_code,
+                },
+              },
               update: { ...item, item_id: trimmedItemId },
               create: { ...item, item_id: trimmedItemId },
             });
@@ -192,11 +202,15 @@ export class ItemsService {
           const trimmedItemId = spec.item_id.trim();
           console.log('trimmedItemId', trimmedItemId);
 
+          // Create a copy of the spec object and remove the identity column
+          let specCopy = { ...spec };
+          delete specCopy.spec_id;
+
           if (action === 'merge') {
             // Increment the sequence number for each spec during merge
             await this.prisma.project_item_specs.create({
               data: {
-                ...spec,
+                ...specCopy,
                 item_id: trimmedItemId,
                 sequence: nextSequence++,
               },
@@ -204,7 +218,7 @@ export class ItemsService {
           } else if (action === 'overwrite') {
             // For overwrite, simply insert the new spec
             await this.prisma.project_item_specs.create({
-              data: { ...spec, item_id: trimmedItemId },
+              data: { ...specCopy, item_id: trimmedItemId },
             });
           }
         }
@@ -223,16 +237,20 @@ export class ItemsService {
           const existingComposition =
             await this.prisma.project_item_compositions.findUnique({
               where: {
-                item_id: trimmedItemId,
-                material_code: composition.material_code,
+                item_id_material_code: {
+                  item_id: trimmedItemId,
+                  material_code: composition.material_code,
+                },
               },
             });
 
           if (!existingComposition && action === 'merge') {
             await this.prisma.project_item_compositions.upsert({
               where: {
-                item_id: trimmedItemId,
-                material_code: composition.material_code,
+                item_id_material_code: {
+                  item_id: trimmedItemId,
+                  material_code: composition.material_code,
+                },
               },
               update: { ...composition, item_id: trimmedItemId },
               create: { ...composition, item_id: trimmedItemId },

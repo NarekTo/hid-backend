@@ -152,16 +152,20 @@ model project_batches {
 }
 
 model project_item_compositions {
-  item_id       String   @id(map: "PK_project_item_compositions") @db.NChar(10)
-  material_code String?  @db.VarChar(10)
-  percentage    Decimal? @db.Decimal(3, 2)
+  item_id       String   @db.NChar(10)
+  material_code String   @db.VarChar(10)
+  percentage    Decimal? @db.Decimal(5, 2)
+
+  @@id([item_id, material_code], map: "PK_project_item_compositions_1")
 }
 
 model project_item_dimensions {
-  item_id   String   @id(map: "PK_project_item_dimensions") @db.NChar(10)
+  item_id   String   @db.NChar(10)
   spec_code String   @db.VarChar(10)
   uom_code  String   @db.VarChar(3)
   value     Decimal? @db.Decimal(5, 2)
+
+  @@id([item_id, spec_code], map: "PK_project_item_dimensions_1")
 }
 
 model project_item_finishes {
@@ -172,16 +176,22 @@ model project_item_finishes {
 }
 
 model project_item_images {
-  item_id        Int @id(map: "PK_project_item_images")
-  image_id       Int
+  image_id       Int    @default(autoincrement())
+  item_id        String @db.NChar(10)
   image_sequence Int
+
+  @@id([image_id, item_id], map: "PK_project_item_images")
 }
 
 model project_item_specs {
-  item_id     String  @id(map: "PK_project_item_specs") @db.NChar(10)
+  spec_id     Int     @default(autoincrement())
+  item_id     String  @db.NChar(10)
   finish_code String? @db.VarChar(10)
   notes       String? @db.VarChar(256)
   sequence    Int?
+
+  @@id([spec_id, item_id], map: "PK_project_item_specs")
+  @@index([item_id], map: "IX_project_item_specs")
 }
 
 model project_items {
@@ -236,6 +246,7 @@ model project_items {
   supplier_notes         String?   @db.VarChar(50)
   created_date           DateTime? @db.Date
   modified_date          DateTime? @db.Date
+  image_url              String?   @db.VarChar(255)
 
   @@index([batch_number], map: "IX_project_items_bath_number")
   @@index([item_ref], map: "IX_project_items_item_ref")
@@ -270,6 +281,17 @@ model project_projects {
   start_date          DateTime @db.Date
   end_date            DateTime @db.Date
   status_code         String?  @db.VarChar(3)
+  image_url           String?  @db.VarChar(255)
 
   @@index([project_number], map: "IX_projects_project_number")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model BAK_project_item_specs {
+  item_id     String  @db.NChar(10)
+  finish_code String? @db.VarChar(10)
+  notes       String? @db.VarChar(256)
+  sequence    Int?
+
+  @@ignore
 }
