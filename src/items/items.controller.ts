@@ -8,9 +8,17 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  Res,
+  HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/users/jwt-auth.guard';
 import { ProjectBatchesService } from 'src/project_batches/project_batches.service';
 import { ProjectProjectsService } from 'src/project_projects/project_projects.service';
@@ -79,6 +87,22 @@ export class ItemsController {
   @ApiOkResponse({ description: 'Return all items in a project' })
   getItemsByProjectNumber(@Param('projectNumber') projectNumber: string) {
     return this.itemsService.getItemsByProjectNumber(projectNumber);
+  }
+
+  @Get(':itemId/details-for-pdf')
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Return item details for PDF generation.',
+  })
+  @ApiResponse({ status: 404, description: 'Item not found.' })
+  async getItemDetailsForPdf(@Param('itemId') itemId: string) {
+    try {
+      const itemDetails = await this.itemsService.getItemDetailsForPdf(itemId);
+      return itemDetails; // NestJS automatically sends this as a JSON response with a 200 OK status
+    } catch (error) {
+      throw new NotFoundException(error.message); // Automatically sends a 404 Not Found status
+    }
   }
 
   @Put(':id')

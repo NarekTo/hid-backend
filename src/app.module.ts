@@ -6,6 +6,9 @@ import { UsersService } from './users/users.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { ItemsModule } from './items/items.module';
 import { ProjectProjectsModule } from './project_projects/project_projects.module';
+import { CurrenciesModule } from './currencies/currencies.module';
+import { CurrenciesController } from './currencies/currencies.controller';
+import { CurrenciesService } from './currencies/currencies.service';
 
 @Module({
   imports: [
@@ -14,8 +17,9 @@ import { ProjectProjectsModule } from './project_projects/project_projects.modul
     PrismaModule,
     ItemsModule,
     ProjectProjectsModule,
+    CurrenciesModule,
   ],
-  controllers: [],
+
   providers: [UsersService],
 })
 export class AppModule {}
