@@ -56,16 +56,11 @@ export class ItemsService {
       where: { item_id: itemId },
     });
 
-    const itemImages = await this.prisma.project_item_images.findMany({
-      where: { item_id: itemId },
-    });
-
     return {
       item,
       itemSpecifications,
       itemCompositions,
       itemDimensions,
-      itemImages, // Added projectImages to the return object
     };
   }
 
@@ -135,9 +130,6 @@ export class ItemsService {
     data: any[],
     action: 'merge' | 'overwrite',
   ) {
-    console.log('Upsert parameters:', { type, itemId, data }); // Log the parameters
-    console.log('Upsert action:', action); // Log the action
-
     switch (type) {
       case 'itemDimensions':
         if (action === 'overwrite') {
@@ -265,5 +257,40 @@ export class ItemsService {
       default:
         throw new Error(`Invalid type: ${type}`);
     }
+  }
+
+  async getItemDetailsForPdf(itemId: string) {
+    // Retrieve item information
+    const item = await this.prisma.project_items.findUnique({
+      where: { Item_id: itemId },
+    });
+
+    const itemSpecifications = await this.prisma.project_item_specs.findMany({
+      where: { item_id: itemId },
+    });
+
+    const itemCompositions =
+      await this.prisma.project_item_compositions.findMany({
+        where: { item_id: itemId },
+      });
+
+    const itemDimensions = await this.prisma.project_item_dimensions.findMany({
+      where: { item_id: itemId },
+    });
+
+    // Retrieve company (manufacturer) information
+    const companyInfo = await this.prisma.lookup_company_addresses.findFirst({
+      where: { company_id: item.manufacturer_id },
+    });
+
+    // Combine all the information into a single object
+    return {
+      item,
+      itemSpecifications,
+      itemDimensions,
+      itemCompositions,
+      companyInfo,
+      // Include this only if it's relevant to the PDF
+    };
   }
 }

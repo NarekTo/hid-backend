@@ -208,7 +208,7 @@ model project_items {
   spares                 Decimal   @db.Decimal(5, 2)
   uom_code               String?   @db.VarChar(5)
   supplier_code          String?   @db.VarChar(5)
-  manufacturer_id        String?   @db.VarChar(5)
+manufacturer_id        String?   @db.VarChar(5)
   part_number            String?   @db.VarChar(50)
   actual_currency        String?   @db.VarChar(3)
   actual_exchange_rate   Decimal   @db.Decimal(5, 2)
