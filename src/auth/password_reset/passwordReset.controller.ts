@@ -35,7 +35,8 @@ export class PasswordResetController {
       from: 'serenaolivieri@hotmail.com',
       to: email,
       subject: 'Password Reset',
-      text: `Click the following link to reset your password: http://localhost:3001/reset-password?token=${passwordReset.token}`
+      // text: `Click the following link to reset your password: http://localhost:3001/reset-password?token=${passwordReset.token}`
+      text: `Click the following link to reset your password: https://hid-app-sigma.vercel.app/reset-password?token=${passwordReset.token}`
     };
 
     transporter.sendMail(mailOptions, function(error, info){

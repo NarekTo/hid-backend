@@ -7,7 +7,8 @@ import {
 
 import { Server, Socket } from 'socket.io';
 
-@WebSocketGateway(3002, { cors: { origin: 'http://localhost:3001' } })
+// @WebSocketGateway(3002, { cors: { origin: 'http://localhost:3001' } })
+@WebSocketGateway(3002, { cors: { origin: 'https://hid-app-sigma.vercel.app' } })
 export class ItemsGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
